@@ -1,0 +1,37 @@
+{
+  "team_id": "bizinsight-nfmgvw",
+  "domain": "corporate_enterprise",
+  "language_scope": ["en"],
+  "african_alpha_claim": false,
+  "budget_laptop_claim": true,
+  "submitter": {
+    "name": "Oselumese Agbonrofo",
+    "email": "oselumeseagbonrofo@gmail.com",
+    "github_handle": "oselumeseagbonrofo"
+  },
+  "cross_disciplinary_pairing": {
+    "discipline": "retail",
+    "load_bearing": true,
+    "description": "The model is primarily intended for customer support and aims to assist SMEs with summarizing and analyzing customer complaints as well as drafting response emails to customer complaints."
+  },
+  "test_prompts": [
+    {
+      "prompt_id": "tp_001",
+      "prompt": "Analyse the following unresolved ticket thread. Provide: Executive Summary (under 50 words), root cause & sentiment (Positive / Neutral / Negative / Escalation Risk) and draft resolution email (polite, concise, offering refund/replacement options) [TICKET THREAD] Customer: Hi, our order #88419 for 20 custom office chairs arrived 4 days late, and 3 bases are cracked. We have an office launch this Friday and cannot use these., Support: Checking on the shipment details now. Customer: Any update? It's been 24 hours. We need replacements or an immediate refund so we can source locally. [/TICKET THREAD]"
+    },
+    {
+      "prompt_id": "tp_002",
+      "prompt": "Categorise the following 5 customer support logs into Logistics, Product Defect, Billing, or UX, and identify the top recurring issue for customers: [LOGS] 1. Invoice didn't show VAT breakdown required for HMRC filing. 2. Tracking link sent via SMS was broken; carrier said package delayed. 3. Need VAT receipt for expense claims on order #4491. 4. Where do I add company tax ID during checkout? 5. Delivery driver left pallets in the rain; packaging damaged. [/LOGS]"
+    }
+  ],
+  "model": {
+    "name": "qwen3.5-2B-lora-Instruct-Q8_0",
+    "runtime": "llama.cpp",
+    "quantization": "GGUF Q8_0",
+    "parameters_estimate": "2B",
+    "packaging": "binary_bundle"
+  },
+  "_runtime": {
+    "model_path": "model/qwen3.5-2B-lora-Instruct-Q8_0.gguf"
+  }
+}
