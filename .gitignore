@@ -9,7 +9,14 @@ model/*.safetensors
 # Python
 __pycache__/
 *.pyc
+*.log
 .venv/
 
 # Local profiler output
 audit.json
+
+# Analytics database
+*.db
+*.db-wal
+*.db-shm
+analytics.db

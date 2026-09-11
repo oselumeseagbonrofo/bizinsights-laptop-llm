@@ -1,0 +1,663 @@
+:root {
+  /* Surface & Background Hierarchy - Pure, seamless dark workspace */
+  --bg-main: #0c0d0e;
+  --bg-card: #14171d;
+  --bg-card-hover: #1a1e26;
+  --bg-input: #13161c;
+  --border-color: rgba(255, 255, 255, 0.07);
+  --border-active: #d97736;
+  --border-focus: rgba(217, 119, 54, 0.5);
+
+  /* Typography & Text */
+  --text-primary: #f0f2f5;
+  --text-secondary: #8b949e;
+  --text-muted: #57606a;
+
+  /* Restrained Copper Tone */
+  --accent-primary: #d97736;
+  --accent-hover: #c46424;
+  --accent-gradient: linear-gradient(135deg, #d97736 0%, #b85d20 100%);
+  --accent-subtle: rgba(217, 119, 54, 0.08);
+
+  /* Messages */
+  --user-bubble: #171b22;
+  --user-border: rgba(255, 255, 255, 0.08);
+
+  /* Operational Signals */
+  --success: #2ea043;
+  --success-glow: rgba(46, 160, 67, 0.2);
+
+  /* Radii */
+  --radius-lg: 10px;
+  --radius-md: 6px;
+  --radius-sm: 4px;
+
+  /* Typography Stacks */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  position: relative;
+  background-color: var(--bg-main);
+}
+
+/* ==========================================================================
+   Header Navigation - Light, Clean, No Box Frame
+   ========================================================================== */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: rgba(12, 13, 14, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 20;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-primary);
+}
+
+.brand-text {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.brand-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: var(--text-primary);
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--success);
+  box-shadow: 0 0 6px var(--success-glow);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.icon-btn:active {
+  transform: scale(0.96);
+}
+
+/* ==========================================================================
+   Chat Canvas
+   ========================================================================== */
+.chat-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 32px 20px;
+  display: flex;
+  flex-direction: column;
+  scroll-behavior: smooth;
+}
+
+/* ==========================================================================
+   Minimal Welcome State (Zero Chunky Cards)
+   ========================================================================== */
+.welcome-card {
+  margin: auto 0;
+  padding: 10px 0 20px 0;
+}
+
+.hero-brand {
+  margin-bottom: 8px;
+}
+
+.hero-title {
+  font-size: 24px;
+  font-weight: 650;
+  letter-spacing: -0.4px;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.hero-tag {
+  font-size: 12px;
+  color: var(--accent-primary);
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.hero-sub {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 580px;
+  margin-bottom: 28px;
+}
+
+.prompt-suggestions {
+  margin-top: 20px;
+}
+
+.suggestions-caption {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Sleek inline suggestion row (no box frame) */
+.suggestion-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 9px 12px;
+  background: transparent;
+  border: none;
+  border-left: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0;
+  text-align: left;
+  cursor: pointer;
+  color: #c9d1d9;
+  font-size: 13.5px;
+  line-height: 1.45;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.suggestion-item:hover {
+  background: rgba(255, 255, 255, 0.025);
+  border-left-color: var(--accent-primary);
+  color: #ffffff;
+  transform: translateX(3px);
+}
+
+.suggestion-arrow {
+  color: var(--accent-primary);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.suggestion-text {
+  flex: 1;
+}
+
+/* ==========================================================================
+   Messages Stream (Seamless Document Canvas)
+   ========================================================================== */
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+}
+
+.message-item {
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.2s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* User Message: Clean pill on the right */
+.message-item.user {
+  align-self: flex-end;
+  max-width: 82%;
+}
+
+.message-item.user .bubble {
+  background: var(--user-bubble);
+  border: 1px solid var(--user-border);
+  color: var(--text-primary);
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Assistant Message: Borderless seamless canvas document */
+.message-item.assistant {
+  align-self: flex-start;
+  max-width: 100%;
+  width: 100%;
+}
+
+.message-item.assistant .bubble {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  color: var(--text-primary);
+  font-size: 14.5px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.bubble p {
+  margin-bottom: 12px;
+}
+
+.bubble p:last-child {
+  margin-bottom: 0;
+}
+
+.bubble strong {
+  font-weight: 650;
+  color: #ffffff;
+}
+
+.bubble ul, .bubble ol {
+  margin-left: 20px;
+  margin-bottom: 12px;
+}
+
+.bubble li {
+  margin-bottom: 4px;
+}
+
+/* Authentic correspondence quote (for email drafts) */
+.bubble blockquote {
+  border-left: 2px solid var(--accent-primary);
+  padding-left: 14px;
+  margin: 14px 0;
+  color: #cbd5e1;
+  font-style: normal;
+}
+
+.bubble code {
+  background: rgba(255, 255, 255, 0.07);
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: #f0f2f5;
+}
+
+.bubble pre {
+  background: #111317;
+  border: 1px solid var(--border-color);
+  padding: 12px 14px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.bubble pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* Minimal Thought Box */
+.thought-box {
+  border-left: 2px solid rgba(255, 255, 255, 0.12);
+  padding-left: 10px;
+  margin-bottom: 14px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.thought-box summary {
+  cursor: pointer;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  color: var(--text-muted);
+  user-select: none;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.15s ease;
+}
+
+.thought-box summary:hover {
+  color: var(--text-secondary);
+}
+
+.thought-content {
+  margin-top: 8px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.streaming-cursor::after {
+  content: "▋";
+  display: inline-block;
+  vertical-align: baseline;
+  animation: cursorBlink 0.8s infinite;
+  color: var(--accent-primary);
+  margin-left: 2px;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.message-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.copy-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 11.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+  transition: color 0.15s ease;
+  font-family: var(--font-sans);
+}
+
+.copy-btn:hover {
+  color: var(--accent-primary);
+}
+
+/* ==========================================================================
+   Bottom Input Dock - Integrated & Clean
+   ========================================================================== */
+.app-footer {
+  padding: 14px 20px 18px 20px;
+  padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  background: rgba(12, 13, 14, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border-color);
+  z-index: 20;
+}
+
+.input-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  background: var(--bg-input);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: var(--radius-md);
+  padding: 8px 10px 8px 14px;
+  transition: border-color 0.15s ease;
+}
+
+.input-form:focus-within {
+  border-color: var(--border-focus);
+}
+
+#prompt-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.45;
+  resize: none;
+  max-height: 120px;
+  padding: 4px 0;
+  font-family: var(--font-sans);
+}
+
+#prompt-input::placeholder {
+  color: var(--text-muted);
+}
+
+.send-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-primary);
+  border: none;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.send-btn:disabled {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+.send-btn:not(:disabled):hover {
+  background: var(--accent-hover);
+}
+
+.footer-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.hint-key {
+  font-family: var(--font-mono);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+/* ==========================================================================
+   QR Phone Gateway Modal
+   ========================================================================== */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100;
+  animation: modalFadeIn 0.15s ease;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-backdrop.active {
+  display: flex;
+}
+
+.modal-card {
+  background: #13161c;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 26px 22px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7);
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+}
+
+.modal-badge {
+  display: inline-block;
+  color: var(--accent-primary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.modal-title {
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.2px;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.modal-subtitle {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.45;
+}
+
+.qr-container {
+  background: #ffffff;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  display: inline-block;
+  margin-bottom: 14px;
+}
+
+.qr-image {
+  width: 170px;
+  height: 170px;
+  display: block;
+}
+
+.network-url-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0d0f13;
+  border: 1px solid var(--border-color);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #38bdf8;
+  margin-bottom: 10px;
+}
+
+.btn-copy-url {
+  background: var(--accent-primary);
+  border: none;
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-copy-url:hover {
+  background: var(--accent-hover);
+}
+
+.modal-footnote {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
