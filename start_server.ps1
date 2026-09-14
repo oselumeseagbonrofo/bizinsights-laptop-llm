@@ -12,7 +12,7 @@ if (-not (Test-Path ".\.venv\Scripts\python.exe")) {
     Write-Host "[INFO] Creating Python virtual environment in .venv..." -ForegroundColor Yellow
     python -m venv .venv
     Write-Host "[INFO] Installing required dependencies..." -ForegroundColor Yellow
-    .\.venv\Scripts\pip install fastapi uvicorn httpx qrcode pillow
+    .\.venv\Scripts\pip install fastapi uvicorn httpx qrcode pillow python-multipart pypdf python-docx
 }
 
 Write-Host "[INFO] Launching local network server..." -ForegroundColor Green

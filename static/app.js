@@ -101,6 +101,117 @@ document.addEventListener("DOMContentLoaded", () => {
   const visitorId = getOrCreateVisitorId();
   const sessionId = getOrCreateSessionId();
 
+  // --- Offline shop knowledge (RAG) ---
+  const btnKb = document.getElementById("btn-kb");
+  const kbPanel = document.getElementById("kb-panel");
+  const kbEnabled = document.getElementById("kb-enabled");
+  const kbFile = document.getElementById("kb-file");
+  const kbUpload = document.getElementById("kb-upload");
+  const kbStatus = document.getElementById("kb-status");
+  const kbList = document.getElementById("kb-list");
+  const kbCount = document.getElementById("kb-count");
+
+  if (kbEnabled) {
+    try {
+      const saved = localStorage.getItem("kb_enabled");
+      if (saved !== null) kbEnabled.checked = saved === "1";
+    } catch (e) {}
+    kbEnabled.addEventListener("change", () => {
+      try {
+        localStorage.setItem("kb_enabled", kbEnabled.checked ? "1" : "0");
+      } catch (e) {}
+    });
+  }
+
+  if (btnKb && kbPanel) {
+    btnKb.addEventListener("click", () => {
+      kbPanel.open = !kbPanel.open;
+    });
+  }
+
+  async function refreshKbList() {
+    if (!kbList) return;
+    try {
+      const res = await fetch("/api/knowledge/list");
+      if (!res.ok) return;
+      const data = await res.json();
+      const docs = data.documents || [];
+      kbList.innerHTML = "";
+      if (kbCount) kbCount.textContent = docs.length ? `${docs.length} doc${docs.length > 1 ? "s" : ""}` : "";
+      if (!docs.length) {
+        if (kbStatus) kbStatus.textContent = "No docs yet. Upload a refund policy, price list, or warranty note.";
+        // First run hint: open the panel once so the feature is discoverable.
+        try {
+          if (kbPanel && !localStorage.getItem("kb_seen")) {
+            kbPanel.open = true;
+            localStorage.setItem("kb_seen", "1");
+          }
+        } catch (e) {}
+        return;
+      }
+      if (kbStatus) kbStatus.textContent = `${docs.length} doc${docs.length > 1 ? "s" : ""} in use for answers.`;
+      docs.forEach((d) => {
+        const li = document.createElement("li");
+        const label = document.createElement("span");
+        label.textContent = `${d.filename} (${d.num_chunks} chunk${d.num_chunks > 1 ? "s" : ""})`;
+        const del = document.createElement("button");
+        del.className = "kb-del";
+        del.textContent = "×";
+        del.title = `Remove ${d.filename}`;
+        del.setAttribute("aria-label", `Remove ${d.filename}`);
+        del.onclick = async () => {
+          if (!confirm(`Remove ${d.filename} from shop knowledge?`)) return;
+          try {
+            const res = await fetch(`/api/knowledge/${d.doc_id}`, { method: "DELETE" });
+            if (!res.ok) {
+              if (kbStatus) kbStatus.textContent = `Remove failed: ${res.status}. Try again.`;
+              return;
+            }
+          } catch (e) {
+            if (kbStatus) kbStatus.textContent = "Remove failed: network error.";
+            return;
+          }
+          refreshKbList();
+        };
+        li.appendChild(label);
+        li.appendChild(del);
+        kbList.appendChild(li);
+      });
+    } catch (e) {}
+  }
+
+  if (kbUpload) {
+    kbUpload.addEventListener("click", async () => {
+      const f = kbFile && kbFile.files && kbFile.files[0];
+      if (!f) {
+        if (kbStatus) kbStatus.textContent = "Pick a file first (.txt, .md, .csv, .pdf, .docx, max 10 MB).";
+        return;
+      }
+      kbUpload.disabled = true;
+      if (kbStatus) kbStatus.textContent = `Uploading ${f.name}...`;
+      try {
+        const form = new FormData();
+        form.append("file", f);
+        const res = await fetch("/api/knowledge/upload", { method: "POST", body: form });
+        if (res.ok) {
+          const info = await res.json();
+          if (kbStatus) kbStatus.textContent = `Added ${info.filename} (${info.num_chunks} chunks).`;
+          if (kbFile) kbFile.value = "";
+        } else {
+          const err = await res.json().catch(() => ({}));
+          if (kbStatus) kbStatus.textContent = `Upload failed: ${err.detail || res.status}`;
+        }
+      } catch (e) {
+        if (kbStatus) kbStatus.textContent = "Upload failed: network error.";
+      } finally {
+        kbUpload.disabled = false;
+        refreshKbList();
+      }
+    });
+  }
+
+  refreshKbList();
+
   function sendAnalyticsBeacon(eventType = "pageview") {
     try {
       const payload = {
@@ -275,6 +386,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let reasoningText = "";
     let answerText = "";
+    let ragSources = [];
     const startTime = performance.now();
 
     function renderBubble() {
@@ -301,7 +413,8 @@ document.addEventListener("DOMContentLoaded", () => {
           messages: messageHistory,
           temperature: 0.3,
           max_tokens: 512,
-          stream: true
+          stream: true,
+          use_rag: kbEnabled ? kbEnabled.checked : true
         }),
         signal: abortController.signal
       });
@@ -313,8 +426,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
       let buffer = "";
+      let doneSeen = false;
 
-      while (true) {
+      while (!doneSeen) {
         const { value, done } = await reader.read();
         if (done) break;
 
@@ -327,10 +441,19 @@ document.addEventListener("DOMContentLoaded", () => {
           if (!trimmed || !trimmed.startsWith("data: ")) continue;
 
           const dataStr = trimmed.slice(6);
-          if (dataStr === "[DONE]") break;
+          // Drain the rest of this chunk after DONE instead of
+          // dropping it, then exit the read loop.
+          if (dataStr === "[DONE]") {
+            doneSeen = true;
+            continue;
+          }
 
           try {
             const parsed = JSON.parse(dataStr);
+            if (parsed.rag_sources) {
+              ragSources = parsed.rag_sources;
+              continue;
+            }
             if (parsed.error) {
               answerText += `\n*[Error: ${parsed.error}]*`;
               renderBubble();
@@ -354,6 +477,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       messageHistory.push({ role: "assistant", content: answerText });
+
+      // Show which shop docs grounded the answer
+      if (ragSources.length) {
+        const srcParent = assistantBubble.parentElement;
+        const src = document.createElement("div");
+        src.className = "rag-sources";
+        src.textContent = "Sources: " + ragSources.map((s) => `${s.filename} (chunk ${s.chunk_id + 1}/${s.num_chunks})`).join(" · ");
+        srcParent.appendChild(src);
+      }
 
       // Add generation time to meta
       const elapsedSec = ((performance.now() - startTime) / 1000).toFixed(1);

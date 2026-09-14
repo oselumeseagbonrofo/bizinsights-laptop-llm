@@ -20,3 +20,10 @@ audit.json
 *.db-wal
 *.db-shm
 analytics.db
+
+# RAG knowledge store (rebuilt from knowledge/ uploads)
+rag_store.db
+rag_store.db-wal
+rag_store.db-shm
+knowledge/*
+!knowledge/.gitkeep

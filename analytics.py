@@ -107,6 +107,10 @@ class AnalyticsDB:
         conn.row_factory = sqlite3.Row
         # Enable WAL mode for high concurrency read/write
         conn.execute("PRAGMA journal_mode=WAL;")
+        try:
+            conn.execute("PRAGMA busy_timeout=10000;")
+        except sqlite3.OperationalError:
+            pass
         return conn
 
     def _init_db(self):
@@ -430,11 +434,46 @@ db = AnalyticsDB()
 def is_rate_limited(ip: str) -> bool:
     """Check if IP has exceeded login attempt threshold."""
     now = time.time()
-    attempts = LOGIN_ATTEMPTS.get(ip, [])
-    # Filter attempts within the window
-    valid_attempts = [t for t in attempts if now - t < LOGIN_WINDOW_SECONDS]
-    LOGIN_ATTEMPTS[ip] = valid_attempts
-    return len(valid_attempts) >= MAX_LOGIN_ATTEMPTS
+    attempts = [t for t in LOGIN_ATTEMPTS.get(ip, []) if now - t < LOGIN_WINDOW_SECONDS]
+    # Evict expired keys so spoofed IPs cannot grow memory forever.
+    # Overflow of fresh keys drops the oldest: throttle only, never data.
+    if len(LOGIN_ATTEMPTS) > 5000:
+        for key in [k for k, v in LOGIN_ATTEMPTS.items() if not any(t > now - LOGIN_WINDOW_SECONDS for t in v)]:
+            LOGIN_ATTEMPTS.pop(key, None)
+    while len(LOGIN_ATTEMPTS) > 5000:
+        LOGIN_ATTEMPTS.pop(next(iter(LOGIN_ATTEMPTS)), None)
+    LOGIN_ATTEMPTS[ip] = attempts
+    return len(attempts) >= MAX_LOGIN_ATTEMPTS
+
+
+def _peer_is_loopback(request: Request) -> bool:
+    try:
+        host = (request.client.host if request.client else "") or ""
+    except Exception:
+        return False
+    return host.startswith("127.") or host in ("::1", "::ffff:127.0.0.1", "localhost")
+
+
+def get_client_ip(request: Request) -> str:
+    """Extract real client IP, trusting proxy headers only from loopback.
+
+    The Cloudflare tunnel lands on 127.0.0.1, so headers stay trusted
+    there. Direct LAN clients use the socket peer, which stops header
+    spoofing from defeating the login and upload rate limits.
+    """
+    if _peer_is_loopback(request):
+        cf_ip = request.headers.get("cf-connecting-ip")
+        if cf_ip:
+            return cf_ip.strip()
+        forwarded = request.headers.get("x-forwarded-for")
+        if forwarded:
+            return forwarded.split(",")[0].strip()
+        real_ip = request.headers.get("x-real-ip")
+        if real_ip:
+            return real_ip.strip()
+    if request.client and request.client.host:
+        return request.client.host
+    return "127.0.0.1"
 
 
 def record_failed_attempt(ip: str):
@@ -442,22 +481,6 @@ def record_failed_attempt(ip: str):
     if ip not in LOGIN_ATTEMPTS:
         LOGIN_ATTEMPTS[ip] = []
     LOGIN_ATTEMPTS[ip].append(now)
-
-
-def get_client_ip(request: Request) -> str:
-    """Extract real client IP from headers (supporting reverse proxies/tunnels) or client host."""
-    cf_ip = request.headers.get("cf-connecting-ip")
-    if cf_ip:
-        return cf_ip.strip()
-    forwarded = request.headers.get("x-forwarded-for")
-    if forwarded:
-        return forwarded.split(",")[0].strip()
-    real_ip = request.headers.get("x-real-ip")
-    if real_ip:
-        return real_ip.strip()
-    if request.client and request.client.host:
-        return request.client.host
-    return "127.0.0.1"
 
 
 def is_authenticated(request: Request) -> bool:
