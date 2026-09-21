@@ -11,6 +11,8 @@ __pycache__/
 *.pyc
 *.log
 .venv/
+.env
+
 
 # Local profiler output
 audit.json
@@ -27,3 +29,20 @@ rag_store.db-wal
 rag_store.db-shm
 knowledge/*
 !knowledge/.gitkeep
+
+# Training scratch & output directories
+training_outputs/
+data_cache/
+lora_weights/
+model_f16/
+llama_cpp/
+final_models/
+*.dat
+*.partial
+training_run.log
+calibration_multidomain_*.txt
+
+# Third-party cloned tools
+third_party/
+
+

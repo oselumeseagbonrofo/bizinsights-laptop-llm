@@ -1,0 +1,61 @@
+{
+  "team_id": "bizinsight-nfmgvw",
+  "domain": "corporate_enterprise",
+  "language_scope": [
+    "en"
+  ],
+  "african_alpha_claim": false,
+  "budget_laptop_claim": true,
+  "submitter": {
+    "name": "Oselumese Agbonrofo",
+    "email": "oselumeseagbonrofo@gmail.com",
+    "github_handle": "oselumeseagbonrofo"
+  },
+  "cross_disciplinary_pairing": {
+    "discipline": "retail",
+    "load_bearing": true,
+    "description": "The model is primarily intended for customer support and aims to assist retail SMEs with summarizing and analyzing customer complaints, evaluating sentiment, drafting polite resolution emails, and flagging potential security threats in customer communications."
+  },
+  "provenance": {
+    "base_model_source": "huggingface:unsloth/Qwen3.5-2B",
+    "base_model_commit_sha": "fffbc0d8711cf87df6d1f97938c5e50ef94aadc7",
+    "fine_tuning_method": "lora",
+    "training_datasets": [
+      {
+        "name": "Bitext-customer-support-llm-chatbot-training-dataset",
+        "source": "huggingface:bitext/Bitext-customer-support-llm-chatbot-training-dataset",
+        "samples_used": 26872
+      },
+      {
+        "name": "sentiment_merged",
+        "source": "huggingface:jbeno/sentiment_merged",
+        "samples_used": 27000
+      },
+      {
+        "name": "Cybersecurity-Dataset-Heimdall-v1.1",
+        "source": "huggingface:AlicanKiraz0/Cybersecurity-Dataset-Heimdall-v1.1",
+        "samples_used": 21258
+      }
+    ]
+  },
+  "test_prompts": [
+    {
+      "prompt_id": "tp_001",
+      "prompt": "Analyse the following unresolved ticket thread. Provide: Executive Summary (under 50 words), root cause & sentiment (Positive / Neutral / Negative / Escalation Risk) and draft resolution email (polite, concise, offering refund/replacement options) [TICKET THREAD] Customer: Hi, our order #88419 for 20 custom office chairs arrived 4 days late, and 3 bases are cracked. We have an office launch this Friday and cannot use these., Support: Checking on the shipment details now. Customer: Any update? It's been 24 hours. We need replacements or an immediate refund so we can source locally. [/TICKET THREAD]"
+    },
+    {
+      "prompt_id": "tp_002",
+      "prompt": "Categorise the following 5 customer support logs into Logistics, Product Defect, Billing, or UX, and identify the top recurring issue for customers: [LOGS] 1. Invoice didn't show VAT breakdown required for HMRC filing. 2. Tracking link sent via SMS was broken; carrier said package delayed. 3. Need VAT receipt for expense claims on order #4491. 4. Where do I add company tax ID during checkout? 5. Delivery driver left pallets in the rain; packaging damaged. [/LOGS]"
+    }
+  ],
+  "model": {
+    "name": "qwen3.5-2B-multidomain-imatrix-Q4_K_M",
+    "runtime": "llama.cpp",
+    "quantization": "GGUF Q4_K_M + imatrix",
+    "parameters_estimate": "2B",
+    "packaging": "binary_bundle"
+  },
+  "_runtime": {
+    "model_path": "model/qwen3.5-2B-multidomain-imatrix-Q4_K_M.gguf"
+  }
+}

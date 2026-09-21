@@ -43,8 +43,9 @@ STATIC_DIR = ROOT_DIR / "static"
 DEFAULT_SYSTEM_PROMPT = (
     "You are BizInsights AI, an intelligent customer support and operations assistant "
     "tailored for retail and enterprise SMEs. You analyze customer tickets, identify root causes, "
-    "evaluate customer sentiment, categorize operational issues, and draft polite, concise, and "
-    "empathetic resolution emails."
+    "evaluate customer sentiment, categorize operational issues, and draft polite, concise, "
+    "and empathetic resolution emails. When you detect requests involving potentially "
+    "security-compromising situations, you provide guidance on appropriate next steps."
 )
 
 # RAG knowledge-base config (100% offline, same-disk SQLite store)
@@ -302,16 +303,6 @@ def find_llama_server_binary() -> Optional[Path]:
     env_path = os.environ.get("LLAMA_SERVER_PATH")
     if env_path and Path(env_path).is_file():
         return Path(env_path)
-
-    # Common Windows locations (including Docker inference runtime)
-    candidates = [
-        Path(r"C:\Users\ZBOOK STUDIO G5\.docker\bin\inference\llama-server.exe"),
-        ROOT_DIR / "llama-server.exe",
-        ROOT_DIR / "bin" / "llama-server.exe",
-    ]
-    for candidate in candidates:
-        if candidate.is_file():
-            return candidate
 
     which_path = shutil.which("llama-server.exe") or shutil.which("llama-server")
     if which_path:

@@ -1,0 +1,49 @@
+{
+  "team_id": "knowledge_assistant",
+  "verdict": "pass",
+  "checks": [
+    {
+      "field": "memory.peak_rss_mb",
+      "submission": 1340.79,
+      "audit": 1340.79,
+      "delta_pct": 0.0,
+      "tolerance_pct": 15.0,
+      "status": "pass"
+    },
+    {
+      "field": "memory.steady_state_rss_mb",
+      "submission": 1270.79,
+      "audit": 1275.24,
+      "delta_pct": 0.35,
+      "tolerance_pct": 15.0,
+      "status": "pass"
+    },
+    {
+      "field": "throughput.tokens_per_second_generation",
+      "submission": 6.67,
+      "audit": 8.25,
+      "delta_pct": 23.69,
+      "tolerance_pct": 25.0,
+      "status": "pass"
+    },
+    {
+      "field": "throughput.first_token_latency_ms",
+      "submission": 38434.41,
+      "audit": 31609.74,
+      "delta_pct": -17.76,
+      "tolerance_pct": 25.0,
+      "status": "pass"
+    }
+  ],
+  "accuracy_audit": [
+    {
+      "benchmark": "arc_easy",
+      "dataset_version": "lm-eval-harness",
+      "language": "en",
+      "samples": 50,
+      "score": 0.7,
+      "metric": "acc_norm"
+    }
+  ],
+  "notes": []
+}

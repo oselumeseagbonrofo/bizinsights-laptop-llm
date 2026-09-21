@@ -1,0 +1,18 @@
+================================================================================
+BIZINSIGHTS AI — MULTI-DOMAIN SFT TRAINING LOG
+================================================================================
+Model: unsloth/Qwen3.5-2B
+Method: LoRA (r=32, alpha=64, dropout=0.0)
+Datasets:
+  - bitext/Bitext-customer-support-llm-chatbot-training-dataset (26,872 samples)
+  - jbeno/sentiment_merged (27,000 samples)
+  - AlicanKiraz0/Cybersecurity-Dataset-Heimdall-v1.1 (21,258 samples)
+Total Samples: 75,130
+Epochs: 3
+Optimizer: adamw_8bit
+Learning Rate: 2e-4 (cosine schedule, warmup_ratio=0.05)
+GPU: NVIDIA RTX A6000 (48 GB VRAM)
+WandB Run: https://wandb.ai/bizinsights-laptop-llm/bizinsights-laptop-llm/runs/qwen3.5-2B-multidomain-a6000
+
+Note: Full loss step-by-step telemetry is synced live to Weights & Biases.
+================================================================================

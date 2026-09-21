@@ -2,6 +2,10 @@
 
 This is team BizInsights official repository for the **Africa Deep Tech Challenge 2026** Laptop LLM track.
 
+## AWQ-informed GGUF research
+
+The reproducible FP16/BF16-to-native-GGUF sensitivity-aware quantisation pipeline is in [quantization/README.md](quantization/README.md). It is isolated from the application runtime and never quantises from AWQ-packed weights.
+
 ## Shop knowledge (offline RAG)
 
 The chat UI has a Shop knowledge panel (book icon in the header). Upload
