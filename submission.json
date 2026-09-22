@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.3.0",
   "profiler_version": "adtc-profiler 0.1.0",
   "submission": {
     "team_id": "bizinsight-nfmgvw",
@@ -19,6 +19,14 @@
       "load_bearing": true,
       "description": "The model is primarily intended for customer support and aims to assist SMEs with summarizing and analyzing customer complaints as well as drafting response emails to customer complaints."
     },
+    "provenance": {
+      "base_model_source": "huggingface:unsloth/Qwen3.5-2B",
+      "base_model_commit_sha": "fffbc0d8711cf87df6d1f97938c5e50ef94aadc7",
+      "fine_tuning_method": "lora",
+      "training_datasets": [
+        "huggingface:bitext/Bitext-customer-support-llm-chatbot-training-dataset"
+      ]
+    },
     "test_prompts": [
       {
         "prompt_id": "tp_001",
@@ -30,9 +38,9 @@
       }
     ],
     "model": {
-      "name": "qwen3.5-2B-lora-Instruct-Q8_0",
+      "name": "qwen3.5-2B-bitext-imatrix-Q4_K_M",
       "runtime": "llama.cpp",
-      "quantization": "GGUF Q8_0",
+      "quantization": "GGUF Q4_K_M",
       "parameters_estimate": "2B",
       "packaging": "binary_bundle"
     }
@@ -45,15 +53,16 @@
     "os": "Windows-10-10.0.21996-SP0"
   },
   "throughput": {
-    "tokens_per_second_generation": 6.36,
-    "first_token_latency_ms": 22782.81,
+    "tokens_per_second_generation": 8.94,
+    "first_token_latency_ms": 15621.72,
     "prompt_tokens": 512,
-    "generated_tokens": 128
+    "generated_tokens": 128,
+    "threads_used": 2
   },
   "memory": {
-    "peak_rss_mb": 2102.18,
-    "steady_state_rss_mb": 2031.56,
-    "peak_vms_mb": 1070.65
+    "peak_rss_mb": 2002.45,
+    "steady_state_rss_mb": 1927.3,
+    "peak_vms_mb": 1657.41
   },
   "accuracy": [
     {
@@ -66,12 +75,12 @@
     }
   ],
   "cpu_thermal": {
-    "cpu_percent_p99": 65.6,
+    "cpu_percent_p99": 70.3,
     "core_temp_c_peak": null,
     "throttled": false
   },
   "reproducibility": {
-    "git_commit_sha": "bc2c80b7232d74b3f931ecf113641326093381ad",
+    "git_commit_sha": "",
     "docker_image_digest": "unknown",
     "random_seed": 42
   },

@@ -14,6 +14,14 @@
     "load_bearing": true,
     "description": "The model is primarily intended for customer support and aims to assist SMEs with summarizing and analyzing customer complaints as well as drafting response emails to customer complaints."
   },
+  "provenance": {
+    "base_model_source": "huggingface:unsloth/Qwen3.5-2B",
+    "base_model_commit_sha": "fffbc0d8711cf87df6d1f97938c5e50ef94aadc7",
+    "fine_tuning_method": "lora",
+    "training_datasets": [
+    "huggingface:bitext/Bitext-customer-support-llm-chatbot-training-dataset"
+    ]
+  },
   "test_prompts": [
     {
       "prompt_id": "tp_001",
@@ -25,13 +33,13 @@
     }
   ],
   "model": {
-    "name": "qwen3.5-2B-lora-Instruct-Q8_0",
+    "name": "qwen3.5-2B-bitext-imatrix-Q4_K_M",
     "runtime": "llama.cpp",
-    "quantization": "GGUF Q8_0",
+    "quantization": "GGUF Q4_K_M",
     "parameters_estimate": "2B",
     "packaging": "binary_bundle"
   },
   "_runtime": {
-    "model_path": "model/qwen3.5-2B-lora-Instruct-Q8_0.gguf"
+    "model_path": "model/qwen3.5-2B-bitext-imatrix-Q4_K_M.gguf"
   }
 }
