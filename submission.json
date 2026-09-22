@@ -80,7 +80,7 @@
     "throttled": false
   },
   "reproducibility": {
-    "git_commit_sha": "",
+    "git_commit_sha": "9f415fd4636cb2a9041a1b0c0e5b3de2a4ca44fa",
     "docker_image_digest": "unknown",
     "random_seed": 42
   },

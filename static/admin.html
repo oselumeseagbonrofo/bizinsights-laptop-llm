@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BizInsights AI — Admin Analytics Dashboard</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      overflow-y: auto;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 0;
+      margin: 0;
+    }
+    .admin-layout {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 60px 16px;
+    }
+    /* Navbar */
+    .admin-navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 16px 20px;
+      background: rgba(18, 24, 36, 0.85);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      backdrop-filter: blur(12px);
+      margin-bottom: 24px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+    .nav-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .nav-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-action {
+      background: #1b2334;
+      border: 1px solid var(--border-color);
+      color: #e2e8f0;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-action:hover {
+      background: #243048;
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+    .btn-logout {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+    .btn-logout:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+    .auto-refresh-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: #121824;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    /* KPI Cards Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+    .kpi-card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--accent-gradient);
+    }
+    .kpi-card.active-users::after {
+      background: linear-gradient(90deg, #10b981, #059669);
+    }
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .kpi-value {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+    .live-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--success);
+      box-shadow: 0 0 10px var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    /* Main Charts/Breakdown Section */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 768px) {
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge-count {
+      font-size: 11px;
+      background: #1e293b;
+      color: #94a3b8;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    /* Progress bar items */
+    .breakdown-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .breakdown-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+    .item-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      color: #e2e8f0;
+    }
+    .item-stats {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+    .progress-track {
+      height: 8px;
+      background: #0d131f;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent-gradient);
+      border-radius: 999px;
+      transition: width 0.5s ease;
+    }
+    .progress-fill.os-windows { background: linear-gradient(90deg, #0284c7, #38bdf8); }
+    .progress-fill.os-ios { background: linear-gradient(90deg, #6366f1, #a855f7); }
+    .progress-fill.os-android { background: linear-gradient(90deg, #10b981, #34d399); }
+    .progress-fill.os-macos { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .progress-fill.os-linux { background: linear-gradient(90deg, #ec4899, #f43f5e); }
+
+    /* Tables */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+    table.data-table th {
+      padding: 10px 14px;
+      background: #0d131f;
+      color: var(--text-secondary);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    table.data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: #cbd5e1;
+    }
+    table.data-table tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-os {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .badge-event {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .badge-chat {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+    .empty-state {
+      padding: 32px 16px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    /* Footer & Controls */
+    .admin-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+      font-size: 12px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-actions {
+      display: flex;
+      gap: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Navbar -->
+    <header class="admin-navbar">
+      <div class="nav-brand">
+        <div class="nav-logo">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="nav-title">BizInsights AI — Admin Analytics</div>
+          <div class="nav-subtitle">
+            <span class="live-dot"></span>
+            <span>Real-Time Device & User Analytics</span>
+            <span id="last-updated" style="margin-left: 8px;"></span>
+          </div>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <label class="auto-refresh-toggle">
+          <input type="checkbox" id="toggle-auto-refresh" checked>
+          <span>Auto-refresh (10s)</span>
+        </label>
+        <button class="btn-action" id="btn-refresh" title="Refresh Analytics">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          Refresh
+        </button>
+        <a href="/" class="btn-action" target="_blank" title="Open Public Chat Site">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+          Public Site
+        </a>
+        <button class="btn-action btn-logout" id="btn-logout" title="Sign Out">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Metric Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card active-users">
+        <div class="kpi-label">
+          <span>Active Users Now</span>
+          <span class="live-dot"></span>
+        </div>
+        <div class="kpi-value" id="kpi-active">0</div>
+        <div class="kpi-sub">Seen in the last 5 minutes</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">
+          <span>Total Unique Visitors</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        </div>
+        <div class="kpi-value" id="kpi-visitors">0</div>
+        <div class="kpi-sub">All-time unique client devices</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">
+          <span>Visits & Sessions</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        </div>
+        <div class="kpi-value" id="kpi-sessions">0</div>
+        <div class="kpi-sub" id="kpi-pageviews">0 total pageviews</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">
+          <span>AI Chat Requests</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </div>
+        <div class="kpi-value" id="kpi-chats">0</div>
+        <div class="kpi-sub">Customer support queries solved</div>
+      </div>
+    </div>
+
+    <!-- Charts & Breakdown Grids -->
+    <div class="grid-2col">
+      <!-- Operating Systems Breakdown -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+            <span>Device Operating Systems</span>
+          </div>
+          <span class="badge-count" id="badge-os-count">0 OS detected</span>
+        </div>
+        <div class="breakdown-list" id="os-list">
+          <div class="empty-state">No OS data collected yet.</div>
+        </div>
+      </div>
+
+      <!-- Device Types & Browsers -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            <span>Device Types & Form Factors</span>
+          </div>
+          <span class="badge-count" id="badge-devices-count">3 Categories</span>
+        </div>
+        <div class="breakdown-list" id="device-list" style="margin-bottom: 24px;">
+          <div class="empty-state">No device data collected yet.</div>
+        </div>
+
+        <div class="section-header" style="margin-top: 24px;">
+          <div class="section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            <span>Top Browsers</span>
+          </div>
+        </div>
+        <div class="breakdown-list" id="browser-list">
+          <div class="empty-state">No browser data collected yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity Stream -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          <span>Real-Time Activity Stream</span>
+        </div>
+        <span class="badge-count" id="badge-events-count">Last 50 events</span>
+      </div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Timestamp (UTC)</th>
+              <th>Event</th>
+              <th>Operating System</th>
+              <th>Device</th>
+              <th>Browser</th>
+              <th>IP Address</th>
+              <th>Target Path</th>
+            </tr>
+          </thead>
+          <tbody id="activity-table-body">
+            <tr>
+              <td colspan="7" class="empty-state">Waiting for visitor events...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Admin Footer & Controls -->
+    <footer class="admin-footer">
+      <div>BizInsights AI &copy; 2026. Private SME local network & cloud deployment.</div>
+      <div class="footer-actions">
+        <button class="btn-action" id="btn-export">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Export JSON
+        </button>
+        <button class="btn-action btn-logout" id="btn-clear-data">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          Reset Logs
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    let analyticsData = null;
+    let refreshTimer = null;
+
+    // Helpers
+    function getOsIcon(os) {
+      const lower = (os || "").toLowerCase();
+      if (lower.includes("windows")) return "🪟";
+      if (lower.includes("ios") || lower.includes("ipados")) return "🍎";
+      if (lower.includes("android")) return "🤖";
+      if (lower.includes("mac")) return "🍏";
+      if (lower.includes("linux")) return "🐧";
+      if (lower.includes("chrome")) return "🌐";
+      return "💻";
+    }
+
+    function getOsClass(os) {
+      const lower = (os || "").toLowerCase();
+      if (lower.includes("windows")) return "os-windows";
+      if (lower.includes("ios")) return "os-ios";
+      if (lower.includes("android")) return "os-android";
+      if (lower.includes("mac")) return "os-macos";
+      if (lower.includes("linux")) return "os-linux";
+      return "";
+    }
+
+    function formatTime(isoStr) {
+      if (!isoStr) return "-";
+      try {
+        const d = new Date(isoStr.endsWith("Z") ? isoStr : isoStr + "Z");
+        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      } catch (e) {
+        return isoStr;
+      }
+    }
+
+    async function loadAnalytics() {
+      try {
+        const res = await fetch("/api/admin/analytics");
+        if (res.status === 401) {
+          window.location.href = "/admin/login";
+          return;
+        }
+        if (!res.ok) throw new Error("Failed to fetch analytics");
+
+        analyticsData = await res.json();
+        renderDashboard(analyticsData);
+      } catch (e) {
+        console.error("Analytics fetch error:", e);
+      }
+    }
+
+    function renderDashboard(data) {
+      // KPIs
+      document.getElementById("kpi-active").textContent = data.active_users || 0;
+      document.getElementById("kpi-visitors").textContent = data.total_visitors || 0;
+      document.getElementById("kpi-sessions").textContent = data.total_sessions || 0;
+      document.getElementById("kpi-pageviews").textContent = `${data.total_pageviews || 0} total pageviews`;
+      document.getElementById("kpi-chats").textContent = data.total_chats || 0;
+      document.getElementById("last-updated").textContent = `• Updated ${new Date().toLocaleTimeString()}`;
+
+      // OS Breakdown
+      const osListEl = document.getElementById("os-list");
+      document.getElementById("badge-os-count").textContent = `${data.os_breakdown.length} OS detected`;
+      if (!data.os_breakdown || data.os_breakdown.length === 0) {
+        osListEl.innerHTML = '<div class="empty-state">No OS data collected yet.</div>';
+      } else {
+        osListEl.innerHTML = data.os_breakdown.map(item => `
+          <div class="breakdown-item">
+            <div class="item-header">
+              <span class="item-name">${getOsIcon(item.name)} <strong>${item.name}</strong></span>
+              <span class="item-stats">${item.count} visitors (${item.percentage}%)</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill ${getOsClass(item.name)}" style="width: ${item.percentage}%;"></div>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      // Device Breakdown
+      const deviceListEl = document.getElementById("device-list");
+      if (!data.device_breakdown || data.device_breakdown.length === 0) {
+        deviceListEl.innerHTML = '<div class="empty-state">No device data collected yet.</div>';
+      } else {
+        deviceListEl.innerHTML = data.device_breakdown.map(item => {
+          const icon = item.name === "Mobile" ? "📱" : (item.name === "Tablet" ? "📟" : "🖥️");
+          return `
+            <div class="breakdown-item">
+              <div class="item-header">
+                <span class="item-name">${icon} <strong>${item.name}</strong></span>
+                <span class="item-stats">${item.count} (${item.percentage}%)</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" style="width: ${item.percentage}%;"></div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      // Browser Breakdown
+      const browserListEl = document.getElementById("browser-list");
+      if (!data.browser_breakdown || data.browser_breakdown.length === 0) {
+        browserListEl.innerHTML = '<div class="empty-state">No browser data collected yet.</div>';
+      } else {
+        browserListEl.innerHTML = data.browser_breakdown.map(item => `
+          <div class="breakdown-item">
+            <div class="item-header">
+              <span class="item-name">🌐 <strong>${item.name}</strong></span>
+              <span class="item-stats">${item.count} (${item.percentage}%)</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" style="width: ${item.percentage}%; background: #38bdf8;"></div>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      // Activity Stream
+      const tableBody = document.getElementById("activity-table-body");
+      if (!data.recent_events || data.recent_events.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="7" class="empty-state">No visitor events recorded yet.</td></tr>';
+      } else {
+        tableBody.innerHTML = data.recent_events.map(ev => {
+          const isChat = ev.event_type === "chat_request";
+          const eventBadge = isChat
+            ? '<span class="badge badge-chat">AI Chat</span>'
+            : '<span class="badge badge-event">Pageview</span>';
+          return `
+            <tr>
+              <td>${formatTime(ev.created_at)}</td>
+              <td>${eventBadge}</td>
+              <td><span class="badge badge-os">${getOsIcon(ev.os)} ${ev.os}</span></td>
+              <td>${ev.device_type}</td>
+              <td>${ev.browser}</td>
+              <td><code>${ev.masked_ip}</code></td>
+              <td><code>${ev.path}</code></td>
+            </tr>
+          `;
+        }).join("");
+      }
+    }
+
+    // Refresh controls
+    document.getElementById("btn-refresh").addEventListener("click", () => {
+      loadAnalytics();
+    });
+
+    const toggleAutoRefresh = document.getElementById("toggle-auto-refresh");
+    function setupAutoRefresh() {
+      if (refreshTimer) clearInterval(refreshTimer);
+      if (toggleAutoRefresh.checked) {
+        refreshTimer = setInterval(loadAnalytics, 10000);
+      }
+    }
+    toggleAutoRefresh.addEventListener("change", setupAutoRefresh);
+
+    // Logout
+    document.getElementById("btn-logout").addEventListener("click", async () => {
+      if (confirm("Sign out of admin dashboard?")) {
+        await fetch("/admin/logout", { method: "POST" });
+        window.location.href = "/admin/login";
+      }
+    });
+
+    // Clear data
+    document.getElementById("btn-clear-data").addEventListener("click", async () => {
+      if (confirm("Are you sure you want to reset all analytics logs? This cannot be undone.")) {
+        const res = await fetch("/api/admin/clear", { method: "POST" });
+        if (res.ok) {
+          loadAnalytics();
+        }
+      }
+    });
+
+    // Export JSON
+    document.getElementById("btn-export").addEventListener("click", () => {
+      if (!analyticsData) return;
+      const blob = new Blob([JSON.stringify(analyticsData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `bizinsights_analytics_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Initial load
+    loadAnalytics();
+    setupAutoRefresh();
+  </script>
+</body>
+</html>
