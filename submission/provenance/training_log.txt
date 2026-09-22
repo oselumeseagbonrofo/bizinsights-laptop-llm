@@ -12,7 +12,17 @@ Epochs: 3
 Optimizer: adamw_8bit
 Learning Rate: 2e-4 (cosine schedule, warmup_ratio=0.05)
 GPU: NVIDIA RTX A6000 (48 GB VRAM)
-WandB Run: https://wandb.ai/bizinsights-laptop-llm/bizinsights-laptop-llm/runs/qwen3.5-2B-multidomain-a6000
+WandB Run: https://wandb.ai/oselumese-pan-atlantic-university/bizinsights-laptop-llm/runs/14hy2jr7
+Total Training Steps: 14,088 / 14,088 (100% complete)
+Total Training Runtime: 28,080 seconds (7h 48m)
+Average Training Loss: 0.797
+Final Step Loss: 0.5767
 
-Note: Full loss step-by-step telemetry is synced live to Weights & Biases.
+Quantization & Artifact Verification:
+Hugging Face Weights Repo: oselumese/qwen3.5-2B_lora_multidomain-weights
+Hugging Face Quantized Repo: oselumese/qwen3.5-2B_lora_multidomain-imatrix
+Pinned Commit SHA: 9495777f407a6edbe8392b4c1f6cd63e3a376c3b
+Calibration: 256 balanced multi-domain samples, 128 chunks (imatrix.dat)
+
+Note: Step-by-step telemetry synced live to Weights & Biases.
 ================================================================================

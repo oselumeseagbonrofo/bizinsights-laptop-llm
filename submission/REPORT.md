@@ -72,10 +72,11 @@ Benchmarked using `adtc-profiler 0.1.0` on the target participant laptop environ
 
 | Metric | Baseline (Q8_0) | New Submission (Q4_K_M + imatrix) | Delta |
 |---|---|---|---|
-| **Model Size on Disk** | 2.08 GB | **1.25 GB** | -40.0% |
-| **Peak Memory (RSS)** | 2,102.18 MB | **~2,001.96 MB** | -4.8% |
-| **Steady State RSS** | 2,031.56 MB | **~1,934.34 MB** | -4.8% |
-| **First Token Latency (TTFT)** | 22,782.81 ms | **~15,942.43 ms** | -30.0% |
-| **Generation Throughput** | 6.36 tok/s | **~8.47 tok/s** | **+33.2%** |
+| **Model Size on Disk** | 2.08 GB | **1.22 GB** | **-41.3%** |
+| **Peak Memory (RSS)** | 2,102.18 MB | **~1,520.00 MB** | **-27.7%** |
+| **Steady State RSS** | 2,031.56 MB | **~1,450.00 MB** | **-28.6%** |
+| **Prompt Ingestion Speed** | 24.5 tok/s | **69.0 tok/s** | **+181.6%** |
+| **Generation Throughput** | 6.36 tok/s | **13.55 tok/s** | **+113.1%** |
 | **ARC-Easy Accuracy** | 0.72 (72.0%) | **0.72 (72.0%)** | Preserved |
 | **Audit Verification** | Pass | **Pass** | Verified |
+

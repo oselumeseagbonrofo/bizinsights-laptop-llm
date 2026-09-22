@@ -19,7 +19,7 @@ MODEL_DIR="$HERE/model"
 # anything else in this file — see "download_model.sh" in README.md for what
 # the evaluators test.
 MODEL_FILE="$MODEL_DIR/qwen3.5-2B-multidomain-imatrix-Q4_K_M.gguf"
-MODEL_URL="https://huggingface.co/oselumese/qwen3.5-2B_lora_multidomain-imatrix/resolve/main/qwen3.5-2B-multidomain-imatrix-Q4_K_M.gguf"
+MODEL_URL="https://huggingface.co/oselumese/qwen3.5-2B_lora_multidomain-imatrix/resolve/9495777f407a6edbe8392b4c1f6cd63e3a376c3b/qwen3.5-2B-multidomain-imatrix-Q4_K_M.gguf"
 
 mkdir -p "$MODEL_DIR"
 
